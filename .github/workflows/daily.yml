@@ -1,0 +1,126 @@
+name: Check and Release
+
+on:
+  # Runs at 5:55 every day.
+  schedule:
+    - cron: '55 5 * * *'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  changes:
+    name: Check for Changes
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.current_release.outputs.release }}
+      lav_version: ${{ steps.lav_version.outputs.release }}
+      description: ${{ steps.lav_version.outputs.description }}
+    steps:
+      - name: Get Current Release
+        id: current_release
+        continue-on-error: true
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          repository: Mediaportal-Plugin-Team/LAVFilters
+          excludes: prerelease, draft
+
+      - name: Get LAV Filters Version
+        id: lav_version
+        continue-on-error: true
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          repository: Nevcairiel/LAVFilters
+          excludes: prerelease, draft
+
+      - name: Completed
+        run: exit 0
+
+  build:
+    name: Build
+    if: ${{ needs.changes.outputs.version != format('v{0}', needs.changes.outputs.lav_version) }}
+    runs-on: windows-2022
+    needs:
+      - changes
+    permissions:
+      contents: write
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v4
+
+      - name: Git Checkout / Tools
+        uses: actions/checkout@v4
+        with:
+          repository: Mediaportal-Plugin-Team/Mediaportal-Tools
+          path: Tools
+
+      - name: MP folder for MPEMaker
+        run: |
+          mkdir "C:\Team MediaPortal"
+        shell: cmd
+
+      - name: Link to MPEMaker
+        run: |
+          mklink /J "C:\Team MediaPortal\MediaPortal" "${{ github.workspace }}\Tools\MPEMaker"
+        shell: cmd
+
+      - name: Download LAV Filters
+        uses: robinraju/release-downloader@v1
+        with:
+          repository: 'Nevcairiel/LAVFilters'
+          latest: true
+          fileName: '*.exe'
+          out-file-path: 'LAV'
+
+      - name: Build MPE1
+        run: |
+          installer.cmd ${{ needs.changes.outputs.lav_version }}
+        working-directory: ${{ github.workspace }}\build
+        shell: cmd
+
+      - name: Update / MPE1 XML
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: 'LAV Filters ${{ needs.changes.outputs.lav_version }} / Release'
+          add: '${{ github.workspace }}/LAV/update.xml'
+
+      - name: Upload Artifact / MPE1
+        uses: actions/upload-artifact@v4
+        if: ${{ success() }}
+        with:
+          name: LAV Filters MPE1
+          path: |
+            ${{ github.workspace }}\LAV\LAVFilters*.mpe1
+          retention-days: ${{ inputs.retention-build || 90 }}
+          if-no-files-found: error
+
+  release:
+    name: LAV Filters Release
+    needs:
+      - build
+      - changes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download Artifacts / Calendars
+        uses: actions/download-artifact@v4
+        with:
+          name: LAV Filters MPE1
+          path: ${{ github.workspace }}/release-files/
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: LAV Filters v${{ needs.changes.outputs.lav_version }}
+          tag_name: v${{ needs.changes.outputs.lav_version }}
+          body: ${{ needs.changes.outputs.description }}
+          generate_release_notes: true
+          files: |
+            release-files/*.mpe1
