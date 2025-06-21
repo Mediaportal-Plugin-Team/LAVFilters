@@ -1,0 +1,5 @@
+# Others
+.idea
+.vscode
+.coverage
+.env
