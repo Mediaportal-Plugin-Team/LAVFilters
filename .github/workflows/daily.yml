@@ -111,7 +111,7 @@ jobs:
       discussions: write
     steps:
       - name: Download Artifacts / LAV Filters
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: LAV Filters MPE1
           path: ${{ github.workspace }}/release-files/
