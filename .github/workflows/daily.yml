@@ -52,10 +52,10 @@ jobs:
       contents: write
     steps:
       - name: Git Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Git Checkout / Tools
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: Mediaportal-Plugin-Team/Mediaportal-Tools
           path: Tools
