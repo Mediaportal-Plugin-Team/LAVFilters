@@ -94,7 +94,7 @@ jobs:
           add: '${{ github.workspace }}/LAV/update.xml'
 
       - name: Upload Artifact / MPE1
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: ${{ success() }}
         with:
           name: LAV Filters MPE1
