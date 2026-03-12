@@ -19,25 +19,28 @@ jobs:
     name: Check for Changes
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.current_release.outputs.release }}
-      lav_version: ${{ steps.lav_version.outputs.release }}
-      description: ${{ steps.lav_version.outputs.description }}
+      version: ${{ steps.current_release.outputs.tag_name }}
+      lav_version: ${{ steps.lav_version.outputs.tag_name }}
+      description: ${{ steps.lav_version.outputs.body }}
     steps:
       - name: Get Current Release
         id: current_release
-        continue-on-error: true
-        uses: pozetroninc/github-action-get-latest-release@master
+        uses: joutvhu/get-release@v1
         with:
-          repository: Mediaportal-Plugin-Team/LAVFilters
-          excludes: prerelease, draft
+          latest: true
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get LAV Filters Version
         id: lav_version
-        continue-on-error: true
-        uses: pozetroninc/github-action-get-latest-release@master
+        uses: joutvhu/get-release@v1
         with:
-          repository: Nevcairiel/LAVFilters
-          excludes: prerelease, draft
+          repo: Nevcairiel/LAVFilters
+          latest: true
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Completed
         run: exit 0
