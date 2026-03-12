@@ -36,6 +36,7 @@ jobs:
         id: lav_version
         uses: joutvhu/get-release@v1
         with:
+          owner: Nevcairiel 
           repo: Nevcairiel/LAVFilters
           latest: true
           prerelease: false
