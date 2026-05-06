@@ -150,7 +150,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
           echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Latest on site** | \`${{ needs.changes.outputs.lav_version }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Latest on site** | v\`${{ needs.changes.outputs.lav_version }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| **Current in repo** | \`${{ needs.changes.outputs.version }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| **Status** | $STATUS |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
