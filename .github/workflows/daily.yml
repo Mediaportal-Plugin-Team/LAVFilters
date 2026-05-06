@@ -118,7 +118,7 @@ jobs:
           path: ${{ github.workspace }}/release-files/
 
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: LAV Filters v${{ needs.changes.outputs.lav_version }}
           tag_name: v${{ needs.changes.outputs.lav_version }}
