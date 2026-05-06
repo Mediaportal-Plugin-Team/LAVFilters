@@ -127,3 +127,31 @@ jobs:
           files: |
             release-files/*.mpe1
           discussion_category_name: Announcements
+
+  report:
+    name: Reporting
+    if: always()
+    needs:
+      - changes
+      - build
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📊 Generate Summary
+        run: |
+          if [[ "${{ needs.build.result }}" == "skipped" ]]; then
+            STATUS="☕ No updates found"
+          elif [[ "${{ needs.build.result }}" == "success" ]]; then
+            STATUS="✅ Successfully updated"
+          else
+            STATUS="❌ Build failed"
+          fi
+
+          echo "## 🚀 SQLite Check Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Latest on site** | \`${{ needs.changes.outputs.lav_version }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Current in repo** | \`${{ needs.changes.outputs.version }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Status** | $STATUS |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 [LAV Filters Download Page](https://github.com/nevcairiel/lavfilters/releases)" >> $GITHUB_STEP_SUMMARY
