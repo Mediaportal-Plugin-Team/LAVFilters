@@ -1,7 +1,7 @@
 name: Check and Release
 
 on:
-  # Runs at 5:55 every day.
+  # Runs at 23:55 every day.
   schedule:
     - cron: '55 23 * * *'
 
