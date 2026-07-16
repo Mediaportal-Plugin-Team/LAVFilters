@@ -100,7 +100,7 @@ public class Script
   public static void Main(PackageClass packageClass, ActionItem actionItem)
   {
     string setupExe = Path.Combine(
-      MpeInstaller.TransformInRealPath("%Base%"), "LAVFilters-0.0.0-Installer.exe");
+      MpeCore.MpeInstaller.TransformInRealPath("%Base%"), "LAVFilters-0.0.0-Installer.exe");
 
     try
     {
